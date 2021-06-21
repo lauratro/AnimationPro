@@ -41,17 +41,13 @@ class Basket {
     this.products = [];
     this.finalAmount = 0;
     this.arrayProd = [];
-    this.discountAmount;
+    this.discountAmount = [];
   }
   addProduct(prod) {
     this.products.push(prod);
     prod.count += 1;
   }
-  /*  removeProduct(prod) {
-    const index = this.products.indexOf(prod);
-    this.products.splice(index, 1);
-    prod.count -= 1;
-  } */
+
   statusBasket(prod) {
     return prod.name + " - price: " + prod.price + "-" + prod.count;
   }
@@ -61,30 +57,38 @@ class Basket {
     let disc = 0;
 
     this.products.forEach((prod) => {
-      total.push(prod.price);
+      if (prod.count >= 4) {
+        total.push(-prod.price);
+      } else {
+        total.push(prod.price);
+      }
+
+      console.log("total", total);
+      this.discount(prod);
     });
 
     this.finalAmount = total.reduce((a, b) => {
       return a + b;
     });
-    this.products.forEach((prod) => {
-      if (prod.count >= 4) {
-        disc = this.finalAmount - prod.price;
-      } else {
-        disc = this.finalAmount;
+    return this.finalAmount - this.discountAmount;
+  }
+  discount(prod) {
+    let disc = 0;
+    for (let key in this.arrayProd) {
+      if (this.arrayProd[key] >= 2) {
+        disc = disc + Number(key);
       }
-    });
-    return disc;
+    }
+    this.discountAmount = disc;
+    console.log(prod.count);
+    console.log("disc", this.discountAmount);
+    return this.discountAmount;
   }
-  discount() {
-    this.products.forEach((prod) => {
-      console.log(prod.count);
-    });
-  }
-  /* numberOfProducts() {
+
+  numberOfProducts() {
     let names = [];
     this.products.forEach((prod) => {
-      names.push(prod.name);
+      names.push(prod.price);
     });
 
     this.arrayProd = names.reduce(function (acc, curr) {
@@ -98,7 +102,7 @@ class Basket {
     }, {});
     return this.arrayProd;
   }
-  discount() {
+  /*   discount() {
     let discount1;
     for (let key in this.arrayProd) {
       console.log(this.arrayProd[key]);
@@ -162,12 +166,6 @@ const displayBasket = () => {
   myBasket.products.forEach((prod, index) => {
     let li = document.createElement("li");
     li.innerHTML = myBasket.statusBasket(prod);
-    /*  let remove = document.createElement("button");
-    remove.innerHTML = " Remove";
-    remove.addEventListener("click", () => {
-      myBasket.removeProduct(prod);
-      li.innerHTML = "";
-    }); */
 
     ul.appendChild(li);
   });
@@ -176,6 +174,8 @@ const displayBasket = () => {
 let addToCart = (prod) => {
   myBasket.addProduct(prod);
   console.log("addmethod", myBasket.products);
+  console.log(myBasket.numberOfProducts());
+  console.log(myBasket.discount(prod));
 
   displayBasket();
 };
