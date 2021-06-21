@@ -17,9 +17,19 @@ class Product {
     this.name = name;
     this.price = price;
     this.quantity = quantity;
+    this.count = 0;
   }
   status() {
-    return "Product: " + this.name + ", " + this.price + ", " + this.quantity;
+    return (
+      "Product: " +
+      this.name +
+      ", " +
+      this.price +
+      ", " +
+      this.quantity +
+      "-in Basket" +
+      this.count
+    );
   }
   inTheBasket() {
     this.quantity -= 1;
@@ -29,30 +39,86 @@ class Product {
 class Basket {
   constructor() {
     this.products = [];
+    this.finalAmount = 0;
+    this.arrayProd = [];
+    this.discountAmount;
   }
   addProduct(prod) {
     this.products.push(prod);
+    prod.count += 1;
   }
+  /*  removeProduct(prod) {
+    const index = this.products.indexOf(prod);
+    this.products.splice(index, 1);
+    prod.count -= 1;
+  } */
   statusBasket(prod) {
-    return prod.name + " - price: " + prod.price;
+    return prod.name + " - price: " + prod.price + "-" + prod.count;
   }
-  totalAmoutCart() {
+
+  totalAmountCart() {
     let total = [];
+    let disc = 0;
+
     this.products.forEach((prod) => {
       total.push(prod.price);
     });
-    let finalAmount = total.reduce((a, b) => {
+
+    this.finalAmount = total.reduce((a, b) => {
       return a + b;
     });
-    return finalAmount;
+    this.products.forEach((prod) => {
+      if (prod.count >= 4) {
+        disc = this.finalAmount - prod.price;
+      } else {
+        disc = this.finalAmount;
+      }
+    });
+    return disc;
   }
+  discount() {
+    this.products.forEach((prod) => {
+      console.log(prod.count);
+    });
+  }
+  /* numberOfProducts() {
+    let names = [];
+    this.products.forEach((prod) => {
+      names.push(prod.name);
+    });
+
+    this.arrayProd = names.reduce(function (acc, curr) {
+      if (typeof acc[curr] == "undefined") {
+        acc[curr] = 1;
+      } else {
+        acc[curr] += 1;
+      }
+
+      return acc;
+    }, {});
+    return this.arrayProd;
+  }
+  discount() {
+    let discount1;
+    for (let key in this.arrayProd) {
+      console.log(this.arrayProd[key]);
+      console.log(key);
+      this.products.forEach((prod) => {
+        if (prod.name == key && this.arrayProd[key] == 2) {
+          discount1 = this.finalAmount - prod.price;
+        }
+      });
+      this.discountAmount = discount1;
+      return discount1;
+    }
+  } */
 }
 let myBasket = new Basket([]);
 let myProducts = [
   new Product("apples", 40, 2),
-  new Product("lemons", 32, 38),
+  new Product("lemons", 20, 38),
   new Product("mangos", 44, 67),
-  new Product("pineapples", 32, 88),
+  new Product("pineapples", 20, 88),
 ];
 
 window.onload = () => {
@@ -96,10 +162,16 @@ const displayBasket = () => {
   myBasket.products.forEach((prod, index) => {
     let li = document.createElement("li");
     li.innerHTML = myBasket.statusBasket(prod);
-    //li.innerHTML = prod.name;
+    /*  let remove = document.createElement("button");
+    remove.innerHTML = " Remove";
+    remove.addEventListener("click", () => {
+      myBasket.removeProduct(prod);
+      li.innerHTML = "";
+    }); */
+
     ul.appendChild(li);
   });
-  tot.innerHTML = myBasket.totalAmoutCart();
+  tot.innerHTML = myBasket.totalAmountCart();
 };
 let addToCart = (prod) => {
   myBasket.addProduct(prod);
@@ -107,4 +179,3 @@ let addToCart = (prod) => {
 
   displayBasket();
 };
-console.log("methstatus", myBasket.statusBasket());
