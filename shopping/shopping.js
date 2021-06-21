@@ -42,6 +42,7 @@ class Basket {
     this.finalAmount = 0;
     this.arrayProd = [];
     this.discountAmount = [];
+    this.four = [];
   }
   addProduct(prod) {
     this.products.push(prod);
@@ -57,38 +58,63 @@ class Basket {
     let disc = 0;
 
     this.products.forEach((prod) => {
-      if (prod.count >= 4) {
-        total.push(-prod.price);
-      } else {
-        total.push(prod.price);
-      }
+      total.push(prod.price);
+      //  console.log(prod);
 
-      console.log("total", total);
-      this.discount(prod);
+      // console.log("total", total);
+      //   this.discount(prod);
     });
 
     this.finalAmount = total.reduce((a, b) => {
       return a + b;
     });
+
     return this.finalAmount - this.discountAmount;
   }
-  discount(prod) {
-    let disc = 0;
-    for (let key in this.arrayProd) {
-      if (this.arrayProd[key] >= 2) {
-        disc = disc + Number(key);
+  /*   count(count, price) {
+    let onsale = 0;
+    if (this.products.length > 0) {
+      //  console.log("c", count);
+      // console.log("p", price);
+      if (count == 2) {
+        console.log("tot", this.finalAmount);
+        onsale = this.finalAmount - price;
       }
     }
-    this.discountAmount = disc;
-    console.log(prod.count);
-    console.log("disc", this.discountAmount);
-    return this.discountAmount;
+    console.log("onsale", onsale);
+  } */
+  filter() {
+    var sumdisc = this.products.filter(function (el) {
+      return el.count >= 2;
+    });
+    console.log("sumdisc", sumdisc);
+    let unique = sumdisc.filter(
+      (v, i, a) => a.findIndex((t) => t.name === v.name) === i
+    );
+    console.log("unique", unique);
+    let total = 0;
+    for (var i = 0; i < unique.length; i++) {
+      total += unique[i].price;
+    }
+    console.log("totaldiscc", total);
+    this.discountAmount = total;
   }
+  /*  discount(prod) {
+    let prodDisc = [];
+
+    this.four.forEach((name) => {
+      if (prod.name == name) {
+        prodDisc.push(prod.price);
+      }
+    });
+    this.discountAmount = prodDisc;
+    console.log("prodD", this.discountAmount);
+  } */
 
   numberOfProducts() {
     let names = [];
     this.products.forEach((prod) => {
-      names.push(prod.price);
+      names.push(prod.name);
     });
 
     this.arrayProd = names.reduce(function (acc, curr) {
@@ -102,6 +128,34 @@ class Basket {
     }, {});
     return this.arrayProd;
   }
+  /*  nested() {
+    let count = "count";
+    if (this.products.length > 0) {
+      const res = this.products.reduce((c, v) => {
+        c[v.name] = c[v.name] || {};
+        c[v.name][v.price] = c[v.name][v.price] || [v.price];
+        c[v.name][v.count] = c[v.name][count] || [v.count];
+
+        return c;
+      }, {});
+      console.log("res", res);
+      for (let key in res) {
+        console.log("key", res[key][key]);
+      }
+    }
+  } */
+
+  /* onlyFour() {
+    let arrayBig = [];
+
+    for (let key in this.arrayProd) {
+      if (this.arrayProd[key] >= 2) {
+        arrayBig.push(key);
+      }
+      this.four = arrayBig;
+      console.log("4", this.four);
+    }
+  } */
   /*   discount() {
     let discount1;
     for (let key in this.arrayProd) {
@@ -161,21 +215,27 @@ const displayBasket = () => {
   let ul = document.getElementById("cartList");
   let tot = document.getElementById("total");
   ul.innerHTML = "";
-  console.log("preloop", myBasket.products);
+  //console.log("preloop", myBasket.products);
 
   myBasket.products.forEach((prod, index) => {
+    //  console.log("prod", prod.price);
     let li = document.createElement("li");
     li.innerHTML = myBasket.statusBasket(prod);
 
     ul.appendChild(li);
+    // defineDiscount(prod.count, prod.price);
   });
   tot.innerHTML = myBasket.totalAmountCart();
 };
 let addToCart = (prod) => {
   myBasket.addProduct(prod);
-  console.log("addmethod", myBasket.products);
-  console.log(myBasket.numberOfProducts());
-  console.log(myBasket.discount(prod));
 
+  // console.log("addmethod", myBasket.products);
+  // console.log(myBasket.numberOfProducts());
+  // console.log(myBasket.discount(prod));
+  //console.log("four", myBasket.onlyFour());
+  // console.log("nest", myBasket.nested());
+  console.log("new", myBasket.filter());
+  // console.log("count", myBasket.count());
   displayBasket();
 };
